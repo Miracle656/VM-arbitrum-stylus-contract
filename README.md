@@ -1,6 +1,6 @@
-![Image](./header.png)
-
-# Stylus Hello World
+# Stylus Vending Machine Smart Contract
+interact with the contract in a UI built with react here: https://miracle656.github.io/arbitrum-stylus-VM-frontend/
+link to the frontend repo: https://github.com/Miracle656/arbitrum-stylus-VM-frontend/
 
 Project starter template for writing Arbitrum Stylus programs in Rust using the [stylus-sdk](https://github.com/OffchainLabs/stylus-sdk-rs). It includes a Rust implementation of a basic counter Ethereum smart contract:
 
@@ -8,15 +8,15 @@ Project starter template for writing Arbitrum Stylus programs in Rust using the 
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-contract Counter {
+contract VendingMachine {
     uint256 public number;
 
-    function setNumber(uint256 newNumber) public {
-        number = newNumber;
+    function give_coffee_to(&mut self, user_address: Address) -> bool {
+        ...
     }
 
-    function increment() public {
-        number++;
+    function get_coffee_balance_for(&self, user_address: Address) -> Uint<256, 4>{
+       ...
     }
 }
 ```
@@ -69,10 +69,10 @@ which outputs:
  * For more information, please see [The Stylus SDK](https://github.com/OffchainLabs/stylus-sdk-rs).
  */
 
-interface Counter {
-    function setNumber(uint256 new_number) external;
+interface IVendingMachine {
+    function giveCoffeeTo(address user_address) external returns (bool),
 
-    function increment() external;
+    function getCoffeeBalanceFor(address user_address) external view returns (uint256)
 }
 ```
 
@@ -150,39 +150,14 @@ By using the program address from your deployment step above, and your wallet, y
 
 ```rs
 abigen!(
-    Counter,
+    VendingMachine,
     r#"[
-        function number() external view returns (uint256)
-        function setNumber(uint256 number) external
-        function increment() external
+        "function giveCoffeeTo(address user_address) external returns (bool)",
+
+        "function getCoffeeBalanceFor(address user_address) external view returns (uint256)"
     ]"#
 );
-let counter = Counter::new(address, client);
-let num = counter.number().call().await;
-println!("Counter number value = {:?}", num);
-
-let _ = counter.increment().send().await?.await?;
-println!("Successfully incremented counter via a tx");
-
-let num = counter.number().call().await;
-println!("New counter number value = {:?}", num);
 ```
-
-Before running, set the following env vars or place them in a `.env` file (see: [.env.example](./.env.example)) in this project:
-
-```
-RPC_URL=https://sepolia-rollup.arbitrum.io/rpc
-STYLUS_CONTRACT_ADDRESS=<the onchain address of your deployed program>
-PRIV_KEY_PATH=<the file path for your priv key to transact with>
-```
-
-Next, run:
-
-```
-cargo run --example counter --target=<YOUR_ARCHITECTURE>
-```
-
-Where you can find `YOUR_ARCHITECTURE` by running `rustc -vV | grep host`. For M1 Apple computers, for example, this is `aarch64-apple-darwin` and for most Linux x86 it is `x86_64-unknown-linux-gnu`
 
 ## Build Options
 
